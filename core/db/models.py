@@ -197,7 +197,7 @@ class TrackAlbumLink(SQLModel, table=True):
     __tablename__ = "track_album"
     track_id: int = Field(primary_key=True, foreign_key="track.id", ondelete="CASCADE")
     album_id: int = Field(primary_key=True, foreign_key="album.id", ondelete="CASCADE")
-    album_position: int
+    album_position: int | None = None
     disc_number: int | None = None
     is_primary_album: bool = False
     track: "TrackORM" = Relationship(back_populates="albums_links")

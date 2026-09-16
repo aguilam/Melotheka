@@ -30,14 +30,14 @@ def find_best_track(
         title_added = False
         for artist in track.artists:
             artist_added = False
-            for i in range(0, len(frequent_artists)):
+            for i in range(len(frequent_artists)):
                 if frequent_artists[i][0].lower() == artist.name.lower():
                     frequent_artists[i].append(artist.name.lower())
                     artist_added = True
                     break
             if not artist_added:
                 frequent_artists.append([artist.name.lower()])
-        for i in range(0, len(frequent_title)):
+        for i in range(len(frequent_title)):
             if frequent_title[i][0].lower() == track.title.lower():
                 frequent_title[i].append(track.title.lower())
                 title_added = True
@@ -45,12 +45,14 @@ def find_best_track(
         if not title_added:
             frequent_title.append([track.title.lower()])
         frequent_length.append(track.length)
-    best_match_title = list(
-        sorted(frequent_title, key=lambda titles: len(titles), reverse=True)
+    best_match_title = sorted(
+        frequent_title, key=lambda titles: len(titles), reverse=True
     )
-    best_match_artist = list(
-        sorted(frequent_artists, key=lambda artists: len(artists), reverse=True)
+
+    best_match_artist = sorted(
+        frequent_artists, key=lambda artists: len(artists), reverse=True
     )
+
     track = []
     for t in best_match_title[:5]:
         track.append(t[0])

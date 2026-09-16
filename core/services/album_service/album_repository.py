@@ -1,12 +1,13 @@
-from core.errors import NotFoundError, BaseError
-from core.utils import encode_datetime_cursor, decode_datetime_cursor
-from core.db.mappers import album_from_orm, album_short_from_orm
-from core.schemas import Album, AlbumShort
-from core.db.utils import in_load_typing
-from core.db.models import AlbumORM, ArtistORM, TrackAlbumLink, TrackORM
-from sqlalchemy import or_, and_
+from sqlalchemy import and_, or_, text
 from sqlalchemy.orm import selectinload
-from sqlmodel import select, col, Session
+from sqlmodel import Session, col, select
+
+from core.db.mappers import album_from_orm, album_short_from_orm
+from core.db.models import AlbumORM, ArtistORM, TrackAlbumLink, TrackORM
+from core.db.utils import in_load_typing
+from core.errors import BaseError, NotFoundError
+from core.schemas import Album, AlbumShort
+from core.utils import decode_datetime_cursor, encode_datetime_cursor
 
 
 def find_or_create_album(
@@ -99,9 +100,11 @@ def get_album_by_id(session: Session, id: int) -> Album | BaseError:
             .selectinload(in_load_typing(TrackAlbumLink.track))
             .selectinload(in_load_typing(TrackORM.albums_links)),
             selectinload(in_load_typing(AlbumORM.artists)),
+            selectinload(in_load_typing(AlbumORM.genres)),
         )
     )
     orm_album = session.exec(statement).first()
+    print(session.connection().execute(text("PRAGMA foreign_keys")).one())
     return album_from_orm(orm_album) if orm_album else NotFoundError()
 
 

@@ -42,7 +42,9 @@ class DownloadersModule(Module):
             return
         downloaders = self.downloaders
         original_track: Track | None = None
-
+        task = TasksManager.task_queue.download.get(task_id, None)
+        if task is None:
+            return
         tracks_dict = []
         searched_tracks = []
         if query:
@@ -52,19 +54,23 @@ class DownloadersModule(Module):
             original_track = find_best_track(search_results)
         elif object_id:
             track = search_module.get_global_object("track", object_id)
+            if isinstance(track, BaseError):
+                TasksManager.task_queue.importing[task_id].error = track.detail
+                TasksManager.task_queue.importing[task_id].status = "error"
+                return
             original_track = track
         if original_track is None:
             return
-        search_query = original_track.title if object_id else query
+        search_query = original_track.title
         for downloader in downloaders:
             current_downloader = downloader.instance
             downloader_search = current_downloader.search(search_query)
             for file in downloader_search:
                 file["downloader"] = current_downloader.TAG
                 searched_tracks.append(file)
-        for track in searched_tracks:
-            similarity = compare_tracks(original_track, track)
-            tracks_dict.append({"id": track["id"], "similarity": similarity})
+        for searched_track in searched_tracks:
+            similarity = compare_tracks(original_track, searched_track)
+            tracks_dict.append({"id": searched_track["id"], "similarity": similarity})
         tracks = sorted(
             tracks_dict, key=lambda track: track["similarity"], reverse=True
         )
@@ -74,9 +80,11 @@ class DownloadersModule(Module):
         track_downloader = next(
             (d for d in downloaders if d.tag == best_track["downloader"]), None
         )
+        if track_downloader is None:
+            return
         downloader = track_downloader.instance
         track_path = downloader.download(
-            best_track, lambda progress: self._update_progress(task_id, progress)
+            best_track, lambda progress: setattr(task, "progress", progress)
         )
         downloaded_path = Path(track_path)
         dst = self.temp_dir / downloaded_path.name
@@ -91,7 +99,11 @@ class DownloadersModule(Module):
             best_storage = storage_module.find_best_storage(
                 file_size=best_track["size"]
             )
-            paths = full_track_save(best_storage, dst, saving_path)
+            if isinstance(best_storage, BaseError):
+                TasksManager.task_queue.importing[task_id].error = best_storage.detail
+                TasksManager.task_queue.importing[task_id].status = "error"
+                return
+            paths = full_track_save(best_storage.instance, dst, saving_path)
             cover_storage_path = paths["cover_path"]
             saved_path = paths["track_path"]
             with DBManager.get_session() as session:
@@ -101,7 +113,7 @@ class DownloadersModule(Module):
                     link=cover_storage_path,
                 )
                 session.add(cover)
-                session.flush(cover)
+                session.flush()
                 track_service.add_new_track(
                     session,
                     track,

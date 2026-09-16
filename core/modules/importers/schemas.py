@@ -1,5 +1,6 @@
-from core.schemas import AlbumType, TrackMetadata
 from dataclasses import dataclass, field
+
+from core.schemas import AlbumType, TrackMetadata
 
 
 @dataclass(slots=True)

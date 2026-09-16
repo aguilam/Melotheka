@@ -46,9 +46,9 @@ class SyncTaskResult:
 
 @dataclass(slots=True)
 class DownloadTaskResult:
-    title: str = ""
+    title: str | None = ""
     artist: list[str] = field(default_factory=list)
-    length: int = 0
+    length: int | None = 0
     storage: str = ""
     download_source: str = ""
     saved_path: str = ""

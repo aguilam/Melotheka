@@ -1,11 +1,12 @@
 from abc import ABC, abstractmethod
+
+from core.modules import Service
 from core.modules.importers.schemas import (
-    ImporterTrack,
     ImporterAlbum,
     ImporterArtist,
     ImporterPlaylist,
+    ImporterTrack,
 )
-from core.modules import Service
 
 
 class Importer(Service, ABC):

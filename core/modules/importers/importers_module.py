@@ -100,7 +100,9 @@ class ImportersModule(Module):
                         [track.id for track in playlist_info.tracks]
                     )
                     task.result.tracks.searched = len(unique_tracks_ids)
-                    db_playlist = PlaylistORM(name=playlist_info.title, is_public=False)
+                    db_playlist = PlaylistORM(
+                        title=playlist_info.title, is_public=False
+                    )
                     session.add(db_playlist)
                     session.flush()
                     playlist_owner = PlaylistOwnerORM(
@@ -124,6 +126,8 @@ class ImportersModule(Module):
                             str(cover_path),
                             cover_name,
                         )
+                        if isinstance(cover_object, BaseError):
+                            continue
                         task.result.covers.saved += 1
                         db_playlist.cover_path = cover_object.id
                         session.flush()
@@ -140,8 +144,6 @@ class ImportersModule(Module):
 
             for track_id in unique_tracks_ids:
                 try:
-                    if track_id is None:
-                        continue
                     track_info = selected_importer.get_track(track_id)
                     if track_info.has_lyrics:
                         tracks_with_lyrics.append(track_id)
@@ -178,6 +180,12 @@ class ImportersModule(Module):
                     best_storage = storage_module.find_best_storage(
                         track_dst.stat().st_size,
                     )
+                    if isinstance(best_storage, BaseError):
+                        TasksManager.task_queue.importing[task_id].status = "error"
+                        TasksManager.task_queue.importing[
+                            task_id
+                        ].error = best_storage.detail
+                        return
                     saved_path = best_storage.instance.save_file(track_dst, saving_path)
                     task.result.tracks.saved += 1
                     db_track_id = track_service.add_new_track(
@@ -209,8 +217,6 @@ class ImportersModule(Module):
 
             for album_id in unique_albums_ids:
                 try:
-                    if album_id is None:
-                        continue
                     album = selected_importer.get_album(album_id)
                     unique_artists_ids.update(album.artist_ids)
                     db_album = album_service.find_or_create_album(
@@ -251,6 +257,8 @@ class ImportersModule(Module):
                             str(cover_path),
                             f"{sanitize_filename(album.artists[0])}/{sanitized_title}/{sanitized_title}.{ext}",
                         )
+                        if isinstance(cover_object, BaseError):
+                            continue
                         task.result.covers.saved += 1
                         db_album.cover_path = cover_object.id
                         session.flush()
@@ -290,8 +298,6 @@ class ImportersModule(Module):
 
             for artist_id in unique_artists_ids:
                 try:
-                    if artist_id is None:
-                        continue
                     artist = selected_importer.get_artist(artist_id)
 
                     db_artist = artist_service.find_or_create_artist(
@@ -344,6 +350,8 @@ class ImportersModule(Module):
                             str(cover_path),
                             f"{sanitized_name}/{sanitized_name}.{ext}",
                         )
+                        if isinstance(cover_object, BaseError):
+                            continue
                         task.result.covers.saved += 1
                         db_artist.cover_path = cover_object.id
                         session.add(db_artist)
@@ -431,6 +439,8 @@ class ImportersModule(Module):
                     lyrics_object = storage_module.save_object(
                         session, str(saved_path), saving_path
                     )
+                    if isinstance(lyrics_object, BaseError):
+                        continue
                     task.result.lyrics.saved += 1
                     new_lyrics.path.append(lyrics_object)
                     session.add(lyrics_object)

@@ -1,5 +1,6 @@
 from abc import ABC
-from typing import ClassVar, Protocol, Any
+from typing import Any, ClassVar, Protocol
+
 from core.modules.tools.events import Event
 
 

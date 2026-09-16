@@ -1,10 +1,12 @@
-from core.modules.downloaders.base import Downloader
-import requests
-import uuid
-import time
-from pathlib import Path
 import re
-from typing import Callable
+import time
+import uuid
+from collections.abc import Callable
+from pathlib import Path
+
+import requests
+
+from core.modules.downloaders.base import Downloader
 
 
 class Slskd(Downloader):
@@ -28,13 +30,13 @@ class Slskd(Downloader):
         request.raise_for_status()
         return request.json()["token"]
 
-    def search(self, track_name: str) -> list[dict]:
+    def search(self, query: str) -> list[dict]:
         token = self._auth()
         slskd_api = self.slskd_api
         headers = {"Authorization": f"Bearer {token}"}
         searches_options = {
             "id": str(uuid.uuid4()),
-            "searchText": track_name,
+            "searchText": query,
         }
         search_post = requests.post(
             f"{slskd_api}/api/v0/searches", json=searches_options, headers=headers

@@ -134,7 +134,7 @@ def add_new_track(
     )
     session.add(new_track)
     session.flush()
-    for album in track_metadata.albums:
+    for index, album in enumerate(track_metadata.albums):
         db_album = album_repository.find_or_create_album(
             session, album.title, album.album_artists
         )
@@ -161,6 +161,7 @@ def add_new_track(
             album_id=db_album.id,
             album_position=album.album_position,
             disc_number=album.disc_number,
+            is_primary_album=index == 0,
         )
         session.add(track_album)
         session.flush()

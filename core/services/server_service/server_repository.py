@@ -1,5 +1,5 @@
 from sqlalchemy import distinct, func, tuple_
-from sqlmodel import Session, col, delete, select
+from sqlmodel import Session, col, delete, exists, select
 
 from core.db.mappers import object_storage_from_orm
 from core.db.models import (
@@ -14,6 +14,7 @@ from core.db.models import (
     MoodORM,
     MusicVideoORM,
     ObjectStorageORM,
+    PlaylistTrackLink,
     TrackAlbumLink,
     TrackArtistsLink,
     TrackGenreLink,
@@ -167,6 +168,27 @@ def delete_orphans(session: Session) -> tuple[int, int, int]:
                     col(AudioFileORM.track_id).is_not(None)
                 )
             )
+        )
+    )
+    session.flush()
+
+    session.exec(
+        delete(TrackAlbumLink).where(
+            ~exists().where(col(TrackORM.id) == col(TrackAlbumLink.track_id))
+        )
+    )
+    session.flush()
+
+    session.exec(
+        delete(PlaylistTrackLink).where(
+            ~exists().where(col(TrackORM.id) == col(PlaylistTrackLink.track_id))
+        )
+    )
+    session.flush()
+
+    session.exec(
+        delete(TrackArtistsLink).where(
+            ~exists().where(col(TrackORM.id) == col(TrackArtistsLink.track_id))
         )
     )
     session.flush()

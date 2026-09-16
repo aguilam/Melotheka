@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
-from typing import Callable
+from collections.abc import Callable
+
 from core.modules import Service
 
 
@@ -12,7 +13,7 @@ class Downloader(Service, ABC):
         pass
 
     @abstractmethod
-    def check_progress(self) -> bool:
+    def check_progress(self, *args, **kwargs) -> bool:
         pass
 
     @abstractmethod

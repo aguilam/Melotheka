@@ -14,6 +14,9 @@ if TYPE_CHECKING:
 class Service(ABC):
     TAG: ClassVar[str]
 
+    def __init__(self, config: dict):
+        self.config = config
+
     @abstractmethod
     def health_check(self) -> HealthStatus:
         return HealthStatus(True)

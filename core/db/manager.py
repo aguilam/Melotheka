@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from sqlalchemy import func
+from sqlalchemy import event, func
 from sqlmodel import (
     Session,
     SQLModel,
@@ -28,10 +28,18 @@ def admin_create(session: Session):
 class _DBManager:
     def __init__(self) -> None:
         self.engine = create_engine("sqlite:///database.db")
+        self._enable_sqlite_fk()
         SQLModel.metadata.create_all(self.engine)
         with self.get_session() as session, session.begin():
             admin_create(session)
             delete_orphans(session)
+
+    def _enable_sqlite_fk(self) -> None:
+        @event.listens_for(self.engine, "connect")
+        def set_sqlite_pragma(dbapi_connection, connection_record):
+            cursor = dbapi_connection.cursor()
+            cursor.execute("PRAGMA foreign_keys=ON")
+            cursor.close()
 
     def get_session(self) -> Session:
         return Session(self.engine)
