@@ -46,23 +46,37 @@ def load_modules[T](
     config: dict, module_classes: dict[str, type[T]]
 ) -> tuple[list[ModuleEntry[T]], list[ServiceStatus]]:
     modules: list[ModuleEntry[T]] = []
-    errors = []
+    statuses = []
     for module, settings in config.items():
         try:
             cls = module_classes[module]
-            if cls and settings.get("enabled", True):
+            is_enabled = settings.get("enabled", True)
+            if cls and is_enabled:
                 params: dict = settings.get("params", {})
                 modules.append(
                     ModuleEntry(
                         module, settings.get("priority", 0), params, cls(params)
                     )
                 )
+                statuses.append(
+                    ServiceStatus(
+                        tag=module,
+                        health=HealthStatus(ok=True),
+                    )
+                )
+            elif cls and not is_enabled:
+                statuses.append(
+                    ServiceStatus(
+                        tag=module,
+                        health=HealthStatus(ok=False, message="Disabled"),
+                    )
+                )
         except Exception as e:
-            errors.append(
+            statuses.append(
                 ServiceStatus(
                     tag=module,
                     health=HealthStatus(ok=False, message=str(e)),
                 )
             )
     modules.sort(key=lambda x: x.priority, reverse=True)
-    return modules, errors
+    return modules, statuses

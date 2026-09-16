@@ -242,7 +242,9 @@ def write_cover_metadata(
 
 
 def write_track_metadata(
-    file_path: str, new_metadata: dict[str, list[str]], rewrite: bool = True
+    file_path: str,
+    new_metadata: dict[str, list[str] | list[str | None]],
+    rewrite: bool = True,
 ):
     track_file = mutagen.File(file_path, easy=True)
     for key, value in new_metadata.items():
