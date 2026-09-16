@@ -230,3 +230,14 @@ class SearchResultsResponse:
     artists: list[ShortArtistResponse]
     albums: list[ShortAlbumResponse]
     tracks: list[ShortTrackResponse]
+
+
+@dataclass(slots=True)
+class TaskResponse[T]:
+    id: str
+    result: T | None
+    start_time: datetime
+    end_time: datetime | None
+    progress: int
+    status: str
+    error: str | None

@@ -1,5 +1,5 @@
 import time
-from dataclasses import asdict, fields
+from dataclasses import asdict
 from typing import Annotated
 from urllib.parse import quote
 
@@ -439,15 +439,8 @@ def post_sync(library: CurrentLibrary, user: Annotated[dict, Depends(user_auth)]
 def get_syncs(library: CurrentLibrary, user: Annotated[dict, Depends(user_auth)]):
     if user["role"] != "admin":
         raise HTTPException(status_code=403, detail="Not permitted")
-    result = []
-    for task_id, sync in library.get_sync_tasks().items():
-        data = {
-            field.name: getattr(sync, field.name)
-            for field in fields(sync)
-            if field.name != "task"
-        }
-        result.append({"id": task_id} | to_camel(data))
-    return result
+    tasks = library.get_sync_tasks()
+    return [to_camel(asdict(task)) for task in tasks]
 
 
 @router.get("/syncs/{id}")
@@ -457,9 +450,7 @@ def get_sync(
     if user["role"] != "admin":
         raise HTTPException(status_code=403, detail="Not permitted")
     sync = check_result(library.get_sync_task(id))
-    cameled = to_camel(asdict(sync))
-    cameled.pop("task", None)
-    return {"id": id} | cameled
+    return to_camel(asdict(sync))
 
 
 @router.delete("/syncs/{id}")
@@ -591,20 +582,14 @@ def post_download(
 
 @router.get("/downloads")
 def get_downloads(library: CurrentLibrary):
-    result = []
-    for task_id, download in library.get_download_tasks().items():
-        data = asdict(download)
-        data.pop("task", None)
-        result.append({"id": task_id} | to_camel(data))
-    return result
+    tasks = library.get_download_tasks()
+    return [to_camel(asdict(task)) for task in tasks]
 
 
 @router.get("/downloads/{id}")
 def get_download(library: CurrentLibrary, id: str):
-    sync = check_result(library.get_download_task(id))
-    cameled = to_camel(asdict(sync))
-    cameled.pop("task", None)
-    return {"id": id} | cameled
+    download = check_result(library.get_download_task(id))
+    return to_camel(asdict(download))
 
 
 @router.delete("/downloads/{id}")

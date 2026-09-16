@@ -1,9 +1,10 @@
+from concurrent.futures import Future, ThreadPoolExecutor
 from threading import RLock
-from core.errors import NotFoundError, BaseError
-from concurrent.futures import ThreadPoolExecutor, Future
 from typing import Literal
 from uuid import uuid4
-from core.tasks.schemas import TaskStorage, Task
+
+from core.errors import BaseError, NotFoundError
+from core.tasks.schemas import Task, TaskStorage
 
 QueueName = Literal["download", "sync", "importing"]
 

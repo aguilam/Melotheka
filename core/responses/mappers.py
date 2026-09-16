@@ -1,41 +1,43 @@
 from __future__ import annotations
 
 from core.responses import (
+    AlbumTrackResponse,
+    FullAlbumResponse,
     FullArtistResponse,
     FullPlaylistResponse,
-    FullAlbumResponse,
     FullTrackResponse,
+    PlaylistTrackResponse,
     ShortAlbumResponse,
     ShortArtistResponse,
-    ShortTrackResponse,
-    ShortUserResponse,
+    ShortGenreResponse,
     ShortLyricsResponse,
+    ShortMoodResponse,
     ShortMusicVideoResponse,
     ShortPlaylistResponse,
-    PlaylistTrackResponse,
-    AlbumTrackResponse,
+    ShortTrackResponse,
+    ShortUserResponse,
+    TaskResponse,
     TrackAlbumResponse,
-    ShortGenreResponse,
-    ShortMoodResponse,
 )
 from core.schemas import (
     Album,
     AlbumShort,
+    AlbumTrack,
     Artist,
     ArtistShort,
+    GenreShort,
+    Lyrics,
+    MoodShort,
+    MusicVideo,
     Playlist,
+    PlaylistTrack,
+    StoredUser,
     Track,
+    TrackAlbum,
     TrackShort,
     User,
-    Lyrics,
-    MusicVideo,
-    StoredUser,
-    PlaylistTrack,
-    AlbumTrack,
-    TrackAlbum,
-    GenreShort,
-    MoodShort,
 )
+from core.tasks.schemas import Task
 
 
 def _required[T](value: T | None) -> T:
@@ -263,4 +265,16 @@ def to_full_artist_response(artist: Artist) -> FullArtistResponse:
         created_at=_required(artist.created_at),
         genres=[to_short_genre_response(genre) for genre in artist.genres],
         albums=[to_short_album_response(album) for album in artist.albums],
+    )
+
+
+def to_task_response(task: Task, task_id: str) -> TaskResponse:
+    return TaskResponse(
+        id=task_id,
+        result=getattr(task, "result", None),
+        start_time=task.start_time,
+        end_time=task.end_time,
+        progress=task.progress,
+        status=task.status,
+        error=task.error,
     )

@@ -1,4 +1,4 @@
-from typing import Callable
+from collections.abc import Callable
 from dataclasses import dataclass
 
 
@@ -32,7 +32,9 @@ class UnauthorizedError(BaseError):
     detail: str = "Please registrate or login"
 
 
-def check_error[T, U](result: T | BaseError, func: Callable[..., U]) -> U | BaseError:
+def check_error[T, U](
+    result: T | BaseError, func: Callable[..., U], *args
+) -> U | BaseError:
     if isinstance(result, BaseError):
         return result
-    return func(result)
+    return func(result, *args)

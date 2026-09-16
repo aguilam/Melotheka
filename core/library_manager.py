@@ -28,6 +28,7 @@ from core.responses import (
     ShortToolResponse,
     ShortTrackResponse,
     ShortUserResponse,
+    TaskResponse,
 )
 from core.responses.mappers import (
     to_full_album_response,
@@ -39,6 +40,7 @@ from core.responses.mappers import (
     to_short_playlist_response,
     to_short_track_response,
     to_short_user_response,
+    to_task_response,
 )
 from core.schemas import (
     ApiKey,
@@ -60,7 +62,6 @@ from core.tasks.schemas import (
     DownloadTaskResult,
     ImportTaskResult,
     SyncTaskResult,
-    Task,
 )
 from core.tasks.tasks_manager import TasksManager
 
@@ -531,29 +532,42 @@ class LibraryManager:
             return storage_module
         return storage_module.get_file_metadata(id)
 
-    def get_sync_task(self, task_id: str) -> Task[SyncTaskResult] | BaseError:
-        return TasksManager.get_task("sync", task_id)
+    def get_sync_task(self, task_id: str) -> TaskResponse[SyncTaskResult] | BaseError:
+        return check_error(
+            TasksManager.get_task("sync", task_id), to_task_response, task_id
+        )
 
-    def get_sync_tasks(self) -> dict[str, Task[SyncTaskResult]]:
-        return TasksManager.get_tasks("sync")
+    def get_sync_tasks(self) -> list[TaskResponse[SyncTaskResult]]:
+        tasks = TasksManager.get_tasks("sync").items()
+        return [to_task_response(task, task_id) for task_id, task in tasks]
 
     def cancel_sync_task(self, task_id: str) -> bool | BaseError:
         return TasksManager.cancel_task("sync", task_id)
 
-    def get_download_task(self, task_id: str) -> Task[DownloadTaskResult] | BaseError:
-        return TasksManager.get_task("download", task_id)
+    def get_download_task(
+        self, task_id: str
+    ) -> TaskResponse[DownloadTaskResult] | BaseError:
+        return check_error(
+            TasksManager.get_task("download", task_id), to_task_response, task_id
+        )
 
-    def get_download_tasks(self) -> dict[str, Task[DownloadTaskResult]]:
-        return TasksManager.get_tasks("download")
+    def get_download_tasks(self) -> list[TaskResponse[DownloadTaskResult]]:
+        tasks = TasksManager.get_tasks("download").items()
+        return [to_task_response(task, task_id) for task_id, task in tasks]
 
     def cancel_download_task(self, task_id: str) -> bool | BaseError:
         return TasksManager.cancel_task("download", task_id)
 
-    def get_import_task(self, task_id: str) -> Task[ImportTaskResult] | BaseError:
-        return TasksManager.get_task("importing", task_id)
+    def get_import_task(
+        self, task_id: str
+    ) -> TaskResponse[ImportTaskResult] | BaseError:
+        return check_error(
+            TasksManager.get_task("importing", task_id), to_task_response, task_id
+        )
 
-    def get_import_tasks(self) -> dict[str, Task[ImportTaskResult]]:
-        return TasksManager.get_tasks("importing")
+    def get_import_tasks(self) -> list[TaskResponse[ImportTaskResult]]:
+        tasks = TasksManager.get_tasks("importing").items()
+        return [to_task_response(task, task_id) for task_id, task in tasks]
 
     def cancel_import_task(self, task_id: str) -> bool | BaseError:
         return TasksManager.cancel_task("importing", task_id)

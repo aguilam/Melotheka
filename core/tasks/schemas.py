@@ -1,5 +1,6 @@
 from concurrent.futures import Future
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 
 
 @dataclass(slots=True)
@@ -57,6 +58,10 @@ class DownloadTaskResult:
 class Task[T]:
     result: T = field(init=False)
     task: Future
+    end_time: datetime | None = None
+    start_time: datetime = field(
+        default_factory=lambda: datetime.now(timezone.utc).replace(microsecond=0)
+    )
     progress: int = 0
     status: str = "processing"
     error: str | None = None

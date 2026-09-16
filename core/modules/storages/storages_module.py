@@ -1,6 +1,7 @@
 import os
 from collections import defaultdict
 from collections.abc import Iterator
+from datetime import datetime, timezone
 from pathlib import Path
 
 from sqlmodel import Session
@@ -407,10 +408,16 @@ class StoragesModule(Module):
                 server_service.delete_orphans(session)
                 session.commit()
                 TasksManager.task_queue.sync[task_id].status = "finished"
+                TasksManager.task_queue.sync[task_id].end_time = datetime.now(
+                    timezone.utc
+                ).replace(microsecond=0)
                 self.logger.info("Syncing succesful completed")
         except Exception as e:
             TasksManager.task_queue.sync[task_id].status = "error"
             TasksManager.task_queue.sync[task_id].error = str(e)
+            TasksManager.task_queue.sync[task_id].end_time = datetime.now(
+                timezone.utc
+            ).replace(microsecond=0)
             self.logger.warning(
                 "Problem in library syncing", task_id=task_id, error=str(e)
             )
