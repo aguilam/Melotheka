@@ -113,7 +113,7 @@ const PlaylistPage = () => {
     if (data?.tracks) {
       setTracks(data.tracks.map((track) => track.id));
     }
-    const librarySearch = createLibrarySearchQuery(searchQuery());
+    const librarySearch = createLibrarySearchQuery(searchQuery);
     setSearchedTracks(librarySearch.data?.pages.flatMap((result) => result.tracks) ?? []);
   });
 

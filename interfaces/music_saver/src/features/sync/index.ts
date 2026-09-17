@@ -1,3 +1,4 @@
-export * from "./ui/syncCard"
-export * from "./model/types"
-export * from "./api/queries"
+export * from "./ui/syncCard";
+export * from "./ui/syncList";
+export * from "./model/types";
+export * from "./api/queries";
