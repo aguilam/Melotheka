@@ -1,0 +1,10 @@
+{
+    "tag": "MBZ",
+    "version": "1.0.0",
+    "entrypoint": "musicbrainz:MusicBrainz",
+    "dependencies": {
+        "python": ["musicbrainzngs==0.7.1"],
+        "modules": [],
+        "modules_optional": []
+    }
+}

@@ -1,6 +1,7 @@
 import musicbrainzngs.musicbrainz
+
 from core.modules.searches.base import Search
-from core.schemas import Track, Album, Artist, ArtistShort
+from core.schemas import Album, Artist, ArtistShort, Track
 
 
 class MusicBrainz(Search):

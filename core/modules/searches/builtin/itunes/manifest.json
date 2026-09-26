@@ -1,0 +1,10 @@
+{
+    "tag": "ITS",
+    "version": "1.0.0",
+    "entrypoint": "itunes:ITunes",
+    "dependencies": {
+        "python": ["itunespy==1.6.1"],
+        "modules": [],
+        "modules_optional": []
+    }
+}

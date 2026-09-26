@@ -1,0 +1,10 @@
+{
+    "tag": "LBZ",
+    "version": "1.0.0",
+    "entrypoint": "listenbrainz:ListenBrainz",
+    "dependencies": {
+        "python": ["liblistenbrainz==0.7.0","musicbrainzngs==0.7.1"],
+        "modules": [],
+        "modules_optional": []
+    }
+}

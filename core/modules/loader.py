@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import inspect
 from importlib import import_module
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -8,6 +7,10 @@ from typing import TYPE_CHECKING
 from structlog import BoundLogger
 
 from core.modules import Module
+from core.modules.manifest_loader import find_manifests
+from core.modules.requirements_loader import (
+    resolve_python_dependency,
+)
 from core.schemas import ServiceStatus
 
 if TYPE_CHECKING:
@@ -31,34 +34,27 @@ def init_modules(
     return modules_dict
 
 
-def load_modules(current_path: str) -> dict[str, type[Module]]:
-    source = Path(current_path).resolve()
+def import_modules(current_path: str) -> dict[str, type[Module]]:
+    source = Path(current_path).resolve().parent
 
     root = source.parent if source.is_file() else source
     package_name = "core.modules"
 
     modules: dict[str, type[Module]] = {}
-
-    for file in root.rglob("*.py"):
-        if file.name == "__init__.py":
-            continue
-
-        relative = file.relative_to(root).with_suffix("")
-
+    manifests = find_manifests(source)
+    resolve_python_dependency(manifests)
+    for module, manifest in manifests.items():
+        relative = module.relative_to(root).with_suffix("")
         module_name = ".".join(
             (
                 package_name,
                 *relative.parts,
             )
         )
-
-        loaded_module = import_module(module_name)
-        for _, cls in inspect.getmembers(loaded_module, inspect.isclass):
-            if (
-                cls.__module__ == loaded_module.__name__
-                and issubclass(cls, Module)
-                and cls is not Module
-            ):
-                key = cls.ID
-                modules[key] = cls
+        mod, cls_name = manifest.entrypoint.split(":", 1)
+        loaded_module = import_module(f"{module_name}.{mod}")
+        cls = getattr(loaded_module, cls_name)
+        if isinstance(cls, type) and issubclass(cls, Module) and cls is not Module:
+            key = manifest.id
+            modules[key] = cls
     return modules

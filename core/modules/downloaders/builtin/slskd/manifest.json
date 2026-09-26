@@ -1,0 +1,10 @@
+{
+    "tag": "SLS",
+    "version": "1.0.0",
+    "entrypoint": "slskd:Slskd",
+    "dependencies": {
+        "python": [],
+        "modules": [],
+        "modules_optional": []
+    }
+}

@@ -1,4 +1,5 @@
 import asyncio
+import time
 from pathlib import Path
 
 import structlog
@@ -15,7 +16,12 @@ async def main():
         config_path.write_text("", encoding="utf-8")
     config = tomllib.loads(config_path.read_text(encoding="utf-8"))
     logger = structlog.getLogger()
+    start = time.perf_counter()
     manager = ModulesManager(logger, config.get("modules", {}))
+    logger.info(
+        "Modules loaded",
+        elapsed_seconds=round(time.perf_counter() - start, 4),
+    )
     library_manager = LibraryManager(manager)
     interfaces = init_interfaces(
         library_manager, config.get("interfaces", {}), load_interfaces(__file__)

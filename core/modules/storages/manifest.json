@@ -1,0 +1,11 @@
+{
+    "id": "storage",
+    "name": "Storage",
+    "version": "1.0.0",
+    "entrypoint": "storages_module:StoragesModule",
+    "dependencies": {
+        "python": [],
+        "modules": [],
+        "modules_optional": []
+    }
+}

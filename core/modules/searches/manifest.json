@@ -1,0 +1,11 @@
+{
+    "id": "search",
+    "name": "Search",
+    "version": "1.0.0",
+    "entrypoint": "searches_module:SearchesModule",
+    "dependencies": {
+        "python": [],
+        "modules": [],
+        "modules_optional": []
+    }
+}

@@ -9,7 +9,7 @@ from sqlmodel import Session
 from core.db.manager import DBManager
 from core.db.models import LyricsORM, MusicVideoORM, ObjectStorageORM
 from core.errors import BaseError, NotFoundError
-from core.loader import import_modules
+from core.loader import old_import_plugins
 from core.modules import Module
 from core.modules.storages.base import Storage
 from core.modules.storages.loader import StorageEntry, load_storages
@@ -42,13 +42,12 @@ class StoragesModule(Module):
         self.temp_dir = Path("temp_files")
         self.config: list
         self.storages, self.statuses = load_storages(
-            self.config, import_modules(__file__, Storage)
+            self.config, old_import_plugins(__file__, Storage)
         )
 
     def get_cover_art(self, session: Session, id: int) -> BinaryBlob | BaseError:
         storage = server_service.get_storage_object_by_id(session, id)
         if storage is None:
-            print("t1")
             return NotFoundError()
         cover_art = self.get_file(storage.link, storage.link_provider)
         if cover_art is None:

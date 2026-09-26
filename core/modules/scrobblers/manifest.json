@@ -1,0 +1,11 @@
+{
+    "id": "scrobbler",
+    "name": "Scrobbler",
+    "version": "1.0.0",
+    "entrypoint": "scrobblers_module:ScrobblersModule",
+    "dependencies": {
+        "python": [],
+        "modules": [],
+        "modules_optional": []
+    }
+}

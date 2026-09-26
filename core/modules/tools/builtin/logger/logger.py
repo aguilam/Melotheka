@@ -6,8 +6,8 @@ from core.modules.tools.events import Event
 from core.schemas import Track
 
 
-class LoggerTool(Tool):
-    NAME = "LoggerTool"
+class Logger(Tool):
+    TAG = "logger"
 
     def __init__(self):
         self.logger: BoundLogger = get_logger(__name__)

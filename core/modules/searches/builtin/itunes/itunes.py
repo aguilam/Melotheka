@@ -1,9 +1,10 @@
-from core.modules.searches.base import Search
 import itunespy
-from core.schemas import Track, Album, Artist, ArtistShort
+
+from core.modules.searches.base import Search
+from core.schemas import Album, Artist, ArtistShort, Track
 
 
-class iTunes(Search):
+class ITunes(Search):
     TAG = "ITS"
 
     def __init__(self, config):

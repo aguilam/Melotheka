@@ -1,4 +1,4 @@
-from sqlalchemy import and_, or_, text
+from sqlalchemy import and_, or_
 from sqlalchemy.orm import selectinload
 from sqlmodel import Session, col, select
 
@@ -104,7 +104,6 @@ def get_album_by_id(session: Session, id: int) -> Album | BaseError:
         )
     )
     orm_album = session.exec(statement).first()
-    print(session.connection().execute(text("PRAGMA foreign_keys")).one())
     return album_from_orm(orm_album) if orm_album else NotFoundError()
 
 

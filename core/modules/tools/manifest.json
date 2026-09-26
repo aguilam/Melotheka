@@ -1,0 +1,11 @@
+{
+    "id": "tools",
+    "name": "Tools",
+    "version": "1.0.0",
+    "entrypoint": "tools_module:ToolsModule",
+    "dependencies": {
+        "python": [],
+        "modules": [],
+        "modules_optional": []
+    }
+}

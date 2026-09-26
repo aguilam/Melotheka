@@ -1,4 +1,4 @@
-from core.loader import import_modules
+from core.loader import old_import_plugins
 from core.modules import Module
 from core.modules.tools.base import Tool
 from core.modules.tools.events import Event
@@ -11,7 +11,7 @@ class ToolsModule(Module):
 
     def __init__(self, modules, config, logger, plugin_dir: str | None = None):
         super().__init__(modules, config, logger)
-        self.functions = load_tools(import_modules(__file__, Tool))
+        self.functions = load_tools(old_import_plugins(__file__, Tool))
         self.statuses = []
 
     def send_event(self, event: Event, **kwargs):

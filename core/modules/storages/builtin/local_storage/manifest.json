@@ -1,0 +1,10 @@
+{
+    "tag": "LOC",
+    "version": "1.0.0",
+    "entrypoint": "local_storage:LocalStorage",
+    "dependencies": {
+        "python": [],
+        "modules": [],
+        "modules_optional": []
+    }
+}

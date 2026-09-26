@@ -1,10 +1,13 @@
 import inspect
 from dataclasses import dataclass
+from importlib import import_module
 from importlib.abc import Loader
 from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
 from typing import Any
 
+from core.modules.manifest_loader import find_manifests
+from core.modules.requirements_loader import resolve_python_dependency
 from core.schemas import HealthStatus, ServiceStatus
 
 
@@ -16,8 +19,42 @@ class ModuleEntry[T]:
     instance: T
 
 
-# TODO: Rename to maybe plugin
-def import_modules[T](current_path: str, BaseClass: type[T]) -> dict[str, type[T]]:
+def import_plugins[T](
+    current_path: str, BaseClass: type[T], package_name: str
+) -> dict[str, type[T]]:
+    source = Path(current_path).resolve().parent
+    root = source.parent if source.is_file() else source
+
+    modules: dict[str, type[T]] = {}
+    searchs_path = find_manifests(source, "builtin/")
+    plugins_path = find_manifests(source, "external/")
+    manifests = {**searchs_path, **plugins_path}
+    resolve_python_dependency(manifests)
+
+    for module, manifest in manifests.items():
+        relative = module.relative_to(root).with_suffix("")
+        module_name = ".".join(
+            (
+                package_name,
+                *relative.parts,
+            )
+        )
+        mod, cls_name = manifest.entrypoint.split(":", 1)
+        loaded_module = import_module(f"{module_name}.{mod}")
+        cls = getattr(loaded_module, cls_name)
+        if (
+            isinstance(cls, type)
+            and issubclass(cls, BaseClass)
+            and cls is not BaseClass
+        ):
+            key = getattr(cls, "NAME", None) or manifest.tag
+            if key is None:
+                continue
+            modules[key] = cls
+    return modules
+
+
+def old_import_plugins[T](current_path: str, BaseClass: type[T]) -> dict[str, type[T]]:
     path = Path.resolve(Path(current_path)).parent
     searchs_path = (path / "builtin").glob("*.py")
     plugins_path = (path / "external").glob("*.py")
@@ -42,7 +79,7 @@ def import_modules[T](current_path: str, BaseClass: type[T]) -> dict[str, type[T
     return modules
 
 
-def load_modules[T](
+def load_plugins[T](
     config: dict, module_classes: dict[str, type[T]]
 ) -> tuple[list[ModuleEntry[T]], list[ServiceStatus]]:
     modules: list[ModuleEntry[T]] = []

@@ -1,7 +1,9 @@
-from core.modules.storages.base import Storage
-import boto3
-from pathlib import Path
 import os
+from pathlib import Path
+
+import boto3
+
+from core.modules.storages.base import Storage
 
 
 class S3(Storage):
@@ -31,7 +33,7 @@ class S3(Storage):
         try:
             self.s3.delete_object(Bucket=self.bucket, Key=path)
             return True
-        except Exception as e:
+        except Exception:
             return False
 
     def check_storage(self) -> int:

@@ -1,0 +1,11 @@
+{
+    "tag": "logger",
+    "name": "Logger",
+    "version": "1.0.0",
+    "entrypoint": "logger:Logger",
+    "dependencies": {
+        "python": [],
+        "modules": [],
+        "modules_optional": []
+    }
+}

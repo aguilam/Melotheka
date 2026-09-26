@@ -1,0 +1,11 @@
+{
+    "id": "downloader",
+    "name": "Downloader",
+    "version": "1.0.0",
+    "entrypoint": "downloaders_module:DownloadersModule",
+    "dependencies": {
+        "python": [],
+        "modules": ["storage>=1.0.0","search>=1.0.0"],
+        "modules_optional": []
+    }
+}

@@ -1,0 +1,11 @@
+{
+    "id": "importer",
+    "name": "Importer",
+    "version": "1.0.0",
+    "entrypoint": "importers_module:ImportersModule",
+    "dependencies": {
+        "python": [],
+        "modules": ["storage>=1.0.0"],
+        "modules_optional": []
+    }
+}

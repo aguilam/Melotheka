@@ -1,0 +1,10 @@
+{
+    "tag": "S3",
+    "version": "1.0.0",
+    "entrypoint": "s3:S3",
+    "dependencies": {
+        "python": ["boto3==1.43.91"],
+        "modules": [],
+        "modules_optional": []
+    }
+}

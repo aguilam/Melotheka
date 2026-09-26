@@ -6,14 +6,14 @@ from structlog import BoundLogger
 
 from core.errors import BaseError, NotFoundError
 from core.modules import Module
-from core.modules.loader import init_modules, load_modules
+from core.modules.loader import import_modules, init_modules
 from core.schemas import ServiceStatus
 
 
 class ModulesManager:
     def __init__(self, logger: BoundLogger, modules_config: dict):
         self._modules = init_modules(
-            self, logger, modules_config, load_modules(__file__)
+            self, logger, modules_config, import_modules(__file__)
         )
 
     def get[T: Module](self, module_class: type[T]) -> T | BaseError:
