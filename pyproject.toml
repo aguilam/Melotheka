@@ -1,5 +1,5 @@
 [project]
-name = "music-saver"
+name = "melotheka"
 version = "0.0.0"
 
 [tool.setuptools.packages.find]

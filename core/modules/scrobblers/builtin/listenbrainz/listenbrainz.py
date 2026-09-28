@@ -5,7 +5,7 @@ import requests
 from core.modules.scrobblers.base import Scrobbler
 from core.schemas import AlbumShort, Artist, ArtistShort, Track
 
-musicbrainzngs.set_useragent("YourAppName", "0.1", "https://yourdomain.example/contact")
+musicbrainzngs.set_useragent("Melotheka", "0.1", "https://github.com/aguilam/Melotheka")
 
 
 class ListenBrainz(Scrobbler):

@@ -1,7 +1,8 @@
-from core.modules import Service
 from abc import ABC, abstractmethod
+
 from core.errors import BaseError
-from core.schemas import TrackShort, AlbumShort, ArtistShort, Track, Album, Artist
+from core.modules import Service
+from core.schemas import Album, AlbumShort, Artist, ArtistShort, Track, TrackShort
 
 
 class Search(Service, ABC):

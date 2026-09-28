@@ -8,7 +8,7 @@ class MusicBrainz(Search):
     TAG = "MBZ"
 
     musicbrainzngs.set_useragent(
-        "YourAppName", "0.1", "https://yourdomain.example/contact"
+        "Melotheka", "0.1", "https://github.com/aguilam/Melotheka"
     )
 
     def __init__(self, config):
