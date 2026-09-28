@@ -9,7 +9,7 @@ const initialUser: ListedUser = {
 };
 
 export const [user, setUser] = makePersisted<
-ListedUser,
+  ListedUser,
   [ListedUser, SetStoreFunction<ListedUser>]
 >(createStore(initialUser), {
   name: "user",

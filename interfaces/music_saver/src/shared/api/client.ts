@@ -1,7 +1,8 @@
 import ky from "ky";
 import { refreshAuth } from "~/features/auth";
+import { setUser } from "../store/user";
 
-export const API_URL = "/api/"
+export const API_URL = "/api/";
 const api = ky.create({
   prefix: API_URL,
   credentials: "include",
@@ -15,15 +16,22 @@ export const client = api.extend({
 
         if (
           response.status !== 401 ||
-          url.pathname === "/auth/refresh" ||
-          url.pathname === "/auth/login" ||
-          url.pathname === "/auth/register"
+          url.pathname.includes("/auth/refresh") ||
+          url.pathname.includes("/auth/login") ||
+          url.pathname.includes("/auth/register")
         ) {
           return response;
         }
 
         const refreshed = await refreshAuth();
-        if (!refreshed) return response;
+        if (!refreshed) {
+          setUser({
+            id: NaN,
+            username: "",
+            isAdmin: false,
+          });
+          return response;
+        }
 
         return api(request, options);
       },

@@ -24,10 +24,9 @@ import {
 
 const AppSidebar: ParentComponent = (props) => {
   const navigate = useNavigate();
-
   return (
     <SidebarProvider>
-      <Show when={user.username} fallback={<Navigate href="/auth" />}>
+      <Show when={user.id} fallback={<Navigate href="/auth" />}>
         <Sidebar>
           <SidebarHeader />
           <SidebarContent>
@@ -106,7 +105,7 @@ const AppSidebar: ParentComponent = (props) => {
         </Sidebar>
       </Show>
       <main class="w-full h-full">
-        <Show when={user.username}>
+        <Show when={user.id}>
           <SidebarTrigger />
         </Show>
         {props.children}
